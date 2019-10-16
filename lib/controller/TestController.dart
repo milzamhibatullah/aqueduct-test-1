@@ -1,17 +1,27 @@
 import 'package:aqueduct/aqueduct.dart';
+import 'package:test1/model/Person.dart';
 import 'package:test1/test1.dart';
 
-class TestController extends Controller {
-  final _test = [
-    {'id': 1, 'name': 'AbangJames'},
-    {'id': 2, 'name': 'Milzam Hibatullah'},
-    {'id': 3, 'name': 'Lemon'},
-    {'id': 4, 'name': 'Tiger Sugar'},
-    {'id': 5, 'name': 'Chaa Time'},
-  ];
+class TestController extends ResourceController {
+  final ManagedContext context;
+  TestController(this.context);
 
-  @override
-  Future<RequestOrResponse> handle(Request request) async {
-    return Response.ok(_test);
+  @Operation.get()
+  Future<Response> getAllNames() async {
+    final nameQuery = Query<Person>(context);
+    final names = await nameQuery.fetch();
+    return Response.ok(names);
+  }
+
+  @Operation.get('id')
+  Future<Response> getNameById(@Bind.path('id') int id) async {
+    final nameQuery = Query<Person>(context)..where((n) => n.id).equalTo(id);
+
+    final name = await nameQuery.fetchOne();
+    if (name == null) {
+      return Response.notFound();
+    } else {
+      return Response.ok(name);
+    }
   }
 }
