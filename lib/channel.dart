@@ -21,7 +21,7 @@ class Test1Channel extends ApplicationChannel {
       return Response.ok({"key": "value"});
     });
 
-    router.route("/test/name/[:id]").link(() => TestController(context));
+    router.route("/test/[:id]").link(() => TestController(context));
     return router;
   }
 }
